@@ -3,45 +3,19 @@ module.exports = function(mongoose, userModel) {
     var websiteModel = mongoose.model('websiteModel', websiteSchema);
 
     var api = {
-        'createWebsite': createWebsite,
-        'findWebsitesByUser': findWebsitesByUser,
-        'findAllWebsites' : findAllWebsites,
+        'createWebsiteForUser': createWebsiteForUser,
+        'findAllWebsitesForUser': findAllWebsitesForUser,
         'findWebsiteById': findWebsiteById,
         'updateWebsite': updateWebsite,
         'removePageFromWebsite': removePageFromWebsite,
-        'addPageToWebsite' : addPageToWebsite,
-        'deleteWebsite': deleteWebsite
+        'deleteWebsite': deleteWebsite,
+        'findAllWebsites' : findAllWebsites,
+        'addPageToWebsite' : addPageToWebsite
     };
+
     return api;
 
-    function removePageFromWebsite(websiteId, pageId) {
-        websiteModel
-            .findById({_id: websiteId})
-            .then(function(website) {
-                var index = website.pages.indexOf(websiteId);
-                website.pages.splice(index, 1);
-                return website.save();
-                },
-                function(error){
-                    console.log(error);
-                }
-            );
-    }
-
-    function addPageToWebsite(websiteId, pageId) {
-        return websiteModel
-            .findById({_id: websiteId})
-            .then(function (website) {
-                website.pages.push(pageId);
-                return website.save();
-            });
-    }
-
-    function findAllWebsites() {
-        return websiteModel.find();
-    }
-
-    function createWebsite(userId, website) {
+    function createWebsiteForUser(userId, website) {
         website._user = userId;
         return websiteModel
             .create(website)
@@ -52,13 +26,12 @@ module.exports = function(mongoose, userModel) {
                 });
     }
 
-    function findWebsitesByUser(userId) {
-        return websiteModel
+    function findAllWebsitesForUser(userId) {
+        return websites = websiteModel
             .find({_user: userId})
             .populate('_user')
             .exec();
     }
-
 
     function findWebsiteById(websiteId) {
         return websiteModel.findOne({_id: websiteId});
@@ -73,15 +46,44 @@ module.exports = function(mongoose, userModel) {
         });
     }
 
-    function deleteWebsite(userId, websiteId) {
-        //var userId = websiteModel.findOne({_id: websiteId})._user;
+    function removePageFromWebsite(websiteId, pageId) {
+        websiteModel
+            .findOne({_id: websiteId})
+            .then(
+                function(website){
+                    var index = website.pages.indexOf(pageId);
+                    website.pages.splice(index, 1);
+                    website.save();
+                },
+                function(error){
+                    console.log(error);
+                }
+            );
+    }
 
+    function addPageToWebsite(websiteId, pageId) {
         return websiteModel
-            .remove({_id: websiteId})
-            .then(function (status) {
-                return userModel
-                    .removeWebsiteFromUser(userId, websiteId);
+            .findOne({_id: websiteId})
+            .then(function (website) {
+                website.pages.push(pageId);
+                return website.save();
             });
     }
+
+    function deleteWebsite(websiteId) {
+        return websiteModel
+            .remove({_id: websiteId})
+            .then(
+                function (status) {
+                    return userModel
+                        .removeWebsiteFromUser(userId, websiteId);
+                }
+            );
+    }
+
+    function findAllWebsites() {
+        return websiteModel.find();
+    }
+
 
 };

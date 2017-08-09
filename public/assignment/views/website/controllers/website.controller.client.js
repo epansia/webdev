@@ -5,9 +5,9 @@
         .controller("NewWebsiteController", NewWebsiteController)
         .controller("EditWebsiteController", EditWebsiteController);
     
-    function WebsiteListController($routeParams, WebsiteService) {
+    function WebsiteListController($routeParams, WebsiteService, loggedin) {
         var vm = this;
-        vm.uid = $routeParams.uid;
+        vm.uid = loggedin._id;
         WebsiteService
             .findWebsitesByUser(vm.uid)
             .then(renderWebsites);
@@ -17,9 +17,9 @@
         }
     }
 
-    function NewWebsiteController($routeParams, $timeout, WebsiteService, $location) {
+    function NewWebsiteController($routeParams, $timeout, WebsiteService, $location, loggedin) {
         var vm = this;
-        vm.uid = $routeParams.uid;
+        vm.uid = loggedin._id;
         vm.newWebsite = newWebsite;
 
         function init() {
@@ -53,9 +53,9 @@
         }
     }
 
-    function EditWebsiteController($routeParams, $location, $timeout, WebsiteService) {
+    function EditWebsiteController($routeParams, $location, $timeout, WebsiteService, loggedin) {
         var vm = this;
-        vm.uid = $routeParams.uid;
+        vm.uid = loggedin._id;
         vm.wid = $routeParams.wid;
 
         vm.updateWebsite = updateWebsite;

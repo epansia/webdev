@@ -25,22 +25,36 @@ module.exports = function(app, models){
             .createPage(wid, page)
             .then(
                 function (page) {
-                    res.json(page);
+                    if(page){
+                        res.json(page);
+                    } else {
+                        page = null;
+                        res.send(page);
+                    }
                 },
                 function (error) {
-                    res.send(error);
-                });
+                    res.sendStatus(400).send("page service server, createPage error");
+                }
+            )
     }
 
     function findAllPagesForWebsite(req, res) {
         var wid = req.params.wid;
         pageModel
             .findAllPagesForWebsite(wid)
-            .then(function (pages) {
-                res.json(pages);
-            }, function (error) {
-                res.send(error);
-            });
+            .then(
+                function (pages) {
+                    if(pages) {
+                        res.json(pages);
+                    } else {
+                        pages = null;
+                        res.send(pages);
+                    }
+                },
+                function (error) {
+                    res.sendStatus(400).send("page service server, findAllPagesForWebsite error");
+                }
+            )
     }
 
     function findPageById(req, res) {
@@ -48,11 +62,19 @@ module.exports = function(app, models){
 
         pageModel
             .findPageById(pid)
-            .then(function (page) {
-                res.json(page);
-            }, function (error) {
-                res.send(error);
-            });
+            .then(
+                function (page) {
+                    if (page) {
+                        res.json(page);
+                    } else {
+                        page = null;
+                        res.send(page);
+                    }
+                },
+                function (error) {
+                    res.sendStatus(400).send("page service server, findPageById error");
+                }
+            );
     }
 
     function updatePage(req, res) {
@@ -64,17 +86,26 @@ module.exports = function(app, models){
             .then(function (page) {
                 res.json(page);
             }, function (status) {
-                res.send(status);
+                res.status(400).send("page service server, updatePage error");
             });
     }
 
     function deletePage(req, res) {
         var pid = req.params.pid;
-        pageModel
-            .deletePage(wid, pid)
-            .then(function (status) {
-                res.send(status);
-            });
+        if(pid){
+            model
+                .deletePage(pid)
+                .then(
+                    function (status){
+                        res.sendStatus(200);
+                    },
+                    function (error){
+                        res.sendStatus(400).send(error);
+                    }
+                );
+        } else{
+            res.sendStatus(412);
+        }
     }
 
 };

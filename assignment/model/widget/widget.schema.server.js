@@ -10,25 +10,25 @@ module.exports = function(mongoose){
         },
         name : String,
         text : String,
-        placeholder : String,
-        description : String,
-        url : String,
+        placeholder : {type: String, default: "placeholder"},
+        description : {type: String, default: "description"},
+        url : {type: String, default: "url"},
         width : {
             type : Number,
             default : 100,
             max : 100,
             min : 0
         },
-        height : Number,
-        rows : Number,
+        height : {type: Number, default: 10},
+        rows : {type: Number, default: 0},
         size : {
             type : Number,
             default : 1
         },
-        class : String,
-        icon : String,
+        class : {type: String, default: "class"},
+        icon : {type: String, default: "icon"},
         deletable : {type : Boolean, default : true},
-        formatted : Boolean,
+        formatted : {type: Boolean, default: false},
         dateCreated : {
             type : Date,
             default: Date.now

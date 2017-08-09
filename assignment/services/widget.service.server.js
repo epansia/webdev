@@ -32,22 +32,38 @@ module.exports = function(app, models){
 
         widgetModel
             .createWidget(pid, widget)
-            .then(function (widget) {
-                res.json(widget);
-            }, function (error) {
-                res.send(error);
-            });
+            .then(
+                function (widget) {
+                    if(widget){
+                        res.json(widget);
+                    } else {
+                        widget = null;
+                        res.send(widget);
+                    }
+                }
+                ,
+                function (error) {
+                    res.sendStatus(400).send("widget service server, createWidget error");
+                }
+            )
     }
 
     function findAllWidgetsForPage(req, res) {
         var pid = req.params.pid;
         widgetModel
             .findAllWidgetsForPage(pid)
-            .then(function (widgets) {
-                res.json(widgets);
-            }, function (error) {
-                res.send(error);
-            });
+            .then(
+                function (widgets) {
+                    if(widgets) {
+                        res.json(widgets);
+                    } else {
+                        widgets = null;
+                        res.send(widgets);
+                    }
+                }, function (error) {
+                    res.sendStatus(400).send("widget service server, findAllWidgetsForPage error");
+                }
+            )
     }
 
     function findWidgetById(req, res) {
@@ -55,11 +71,19 @@ module.exports = function(app, models){
 
         widgetModel
             .findWidgetById(wgid)
-            .then(function (widget) {
-                res.json(widget);
-            }, function (error) {
-                res.send(error);
-            });
+            .then(
+                function (widget) {
+                    if (widget) {
+                        res.json(widget);
+                    } else {
+                        widget = null;
+                        res.send(widget);
+                    }
+                },
+                function (error) {
+                    res.sendStatus(400).send("widget service server, findWidgetById error");
+                }
+            );
     }
 
     function updateWidget(req, res) {
@@ -68,20 +92,32 @@ module.exports = function(app, models){
         var widget = req.body;
         widgetModel
             .updateWidget(wgid, widget)
-            .then(function (widget) {
-                res.json(widget);
-            }, function (status) {
-                res.send(status);
-            });
+            .then(
+                function (widget) {
+                    res.json(widget);
+                },
+                function (error) {
+                    res.status(400).send("widget service server, updateWidget error");
+                }
+            );
     }
 
     function deleteWidget(req, res) {
         var wgid = req.params.wgid;
-        widgetModel
-            .deleteWidget(pid, wgid)
-            .then(function (status) {
-                res.send(status);
-            });
+        if(wgid){
+            widgetModel
+                .deleteWidget(wgid)
+                .then(
+                    function (status){
+                        res.sendStatus(200);
+                    },
+                    function (error){
+                        res.sendStatus(400).send(error);
+                    }
+                );
+        } else{
+            res.sendStatus(412);
+        }
     }
 
     app.post ("/api/upload", upload.single('myFile'), uploadImage);
@@ -103,34 +139,54 @@ module.exports = function(app, models){
         var size          = myFile.size;
         var mimetype      = myFile.mimetype;
 
-        widget = getWidgetById(widgetId);
-        widget.url = '/uploads/'+filename;
+        var url = 'uploads/'+filename;
 
-        function getWidgetById(widgetId) {
+        // when try to create a new image
+        if (widgetId === undefined || widgetId === null || widgetId === '') {
+            var widget = {
+                widgetType: "IMAGE",
+                url: url,
+                width: width
+            };
 
-            // when try to create a new image
-            if (widgetId === undefined || widgetId === null || widgetId === '') {
-                console.log("come into the correct loop");
-                // create a new widget, add to widgets
-                var newWidget = {
-                    _id: new Date().getTime(),
-                    widgetType: "IMAGE",
-                    pageId: pageId,
-                    width: width
-                };
-                widgets.push(newWidget);
-                return newWidget;
-            }
+            widgetModel
+                .createWidget(pageId, widget)
+                .then(
+                    function (widget) {
+                        if(widget){
+                            res.json(widget);
+                        } else {
+                            widget = null;
+                            res.send(widget);
+                        }
+                    }
+                    ,
+                    function (error) {
+                        res.sendStatus(400).send("widget service server, upload error");
+                    }
+                )
+        } else {
+            // when trying to edit existing image
+            widgetModel
+                .findWidgetById(widgetId)
+                .then(
+                    function (widget) {
+                        widget.url = url;
+                        model.updateWidget(widgetId, widget)
+                            .then(
+                                function (widget) {
+                                    res.json(widget);
+                                },
+                                function (error) {
+                                    res.status(400).send("widget service server, updateWidget error");
+                                }
+                            )
+                    },
+                    function (error) {
+                        res.status(400).send("Cannot find widget by id");
+                    }
+                )
 
-            // edit existing image
-            for (w in widgets) {
-                var widget = widgets[w];
-                if (String(widget._id) === String(widgetId)) {
-                    return widget;
-                }
-            }
-
-            return null;
         }
 
         var callbackUrl  = "/#!/user/"+userId+"/website/"+websiteId+"/page/"+pageId+"/widget";
@@ -145,9 +201,14 @@ module.exports = function(app, models){
 
         widgetModel
             .reorderWidgets(pid, index1, index2)
-            .then(function (status) {
+            .then(
+                function (status) {
                 res.send(status);
-            });
+                },
+                function (error) {
+                    res.status(400).send("Cannot reorder widgets");
+                }
+            );
 
     }
 

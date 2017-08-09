@@ -3,13 +3,13 @@
     <div class="container-fluid row">
 
         <div class="navbar-text pull-left">
-            <a href="#!/user/{{model.uid}}/website/{{model.wid}}/page" class="cl-text-black cl-icon-padding">
+            <a href="#!/website/{{model.wid}}/page" class="cl-text-black cl-icon-padding">
           <span class="glyphicon glyphicon-chevron-left">
           </span>
             </a>
         </div>
         <div class="navbar-text pull-right">
-            <a href="#!/user/{{model.uid}}/website/{{model.wid}}/page/{{model.pid}}/widget/new"
+            <a href="#!/website/{{model.wid}}/page/{{model.pid}}/widget/new"
                class="cl-icon-padding cl-text-black">
           <span class="glyphicon glyphicon-plus">
           </span>
@@ -25,14 +25,14 @@
 <div wbdv-sortable="model.pid" class="container cl-container-padding">
     <div ng-repeat="widget in model.widgets" class="margin-bottom">
             <div class="widget-toolbar">
-                <a href="#!/user/{{model.uid}}/website/{{model.wid}}/page/{{model.pid}}/widget/{{widget._id}}">
+                <a href="#!/website/{{model.wid}}/page/{{model.pid}}/widget/{{widget._id}}">
                     <span class="glyphicon glyphicon-cog"></span>
                 </a>
                 <span class="glyphicon glyphicon-menu-hamburger"></span>
             </div>
             <div ng-switch="model.widgetType">
                 <div ng-switch-when="HEADING">
-                    <div ng-include="'views/widget/templates/heading/widget-header.view.client.html'"></div>
+                    <div ng-include="'views/widget/templates/heading/widget-heading.view.client.html'"></div>
                 </div>
                 <div ng-switch-when="IMAGE">
                     <div ng-include="'views/widget/templates/image/widget-image.view.client.html'"></div>
@@ -69,7 +69,7 @@
         </div>
 
         <div class="pull-right navbar-text">
-            <a href="#!/user/{{model.uid}}" class="tv-icon-padding">
+            <a href="#!/profile" class="tv-icon-padding">
                 <span class="glyphicon glyphicon-user"></span>
             </a>
         </div>

@@ -1,0 +1,29 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-text pull-left margin-left">
+            <a href="#!/home" class="cl-text-black">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+            </a>
+        </div>
+        <a class="navbar-brand cl-text-bold">
+            Users List
+        </a>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div ng-show="model.error" class="alert alert-danger" role="alert">{{model.error}}</div>
+    <ul class="list-group borderless">
+        <li ng-repeat="user in model.users" class="list-group-item cl-list-item-borderless">
+            <a ng-click="model.deleteUser(user)">
+                <span class="glyphicon glyphicon-remove pull-right"></span>
+            </a>
+            <a>
+                {{user.username}} : {{user.firstName}} {{user.lastName}}
+            </a>
+        </li>
+    </ul>
+</div>
+
+<nav class="navbar navbar-fixed-bottom navbar-default">
+</nav>

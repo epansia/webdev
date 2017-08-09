@@ -10,76 +10,53 @@ module.exports = function(mongoose){
         'updateUser' : updateUser,
         'removeWebsiteFromUser' : removeWebsiteFromUser,
         'addWebsiteForUser' : addWebsiteForUser,
-        'deleteUser' : deleteUser
+        'deleteUser' : deleteUser,
+        'findAllUser' : findAllUser,
+        'findUserByGoogleId' : findUserByGoogleId
     };
 
     return api;
 
-    // Function Definition Section
-
-
-
     function createUser(user){
-        var newUser = {
-            username : user.username,
-            password : user.password,
-            websites : []
-        };
-
-        if(user.firstName){
-            newUser.firstName = user.firstName;
-        }
-        if(user.lastName){
-            newUser.lastName = user.lastName;
-        }
-        if(user.email){
-            newUser.email = user.email;
-        }
-        if(user.phone){
-            newUser.phone = user.phone;
-        }
-
+        user.roles = ['USER'];
+        user.websites = [];
         return userModel.create(user);
     }
 
-    function findAllUsers() {
-        return userModel.find();
-    }
-
     function findUserById(userId){
-        return userModel.findById(userId);
+        return userModel.findOne({_id: userId});
     }
 
     function findUserByUsername(uname){
         return userModel.findOne({username : uname})
     }
 
-
-    function findUserByCredentials(username, password){
+    function findUserByCredentials(uname, pswrd){
         return userModel.findOne({
-            username : username,
-            password : password
+            username : uname,
+            password : pswrd
         });
     }
 
     function updateUser(userId, user){
-        delete user.username;
-        delete user.password;
         return userModel.update({
             _id : userId
-        }, {$set: user});
+        }, {
+            firstName : user.firstName,
+            lastName : user.lastName,
+            email : user.email,
+            phone : user.phone
+        });
     }
 
     function removeWebsiteFromUser(userId, websiteId){
-         userModel
-            .findById(userId)
+        userModel
+            .findOne({_id: userId})
             .then(
                 function(user){
                     var index = user.websites.indexOf(websiteId);
                     user.websites.splice(index, 1);
                     return user.save();
-                    // user.websites.pull(websiteId);
-                    // user.save();
                 },
                 function(error){
                     console.log(error);
@@ -100,5 +77,14 @@ module.exports = function(mongoose){
         return userModel.remove({
             _id : userId
         });
+    }
+
+    function findAllUser() {
+        return userModel.find();
+    }
+
+
+    function findUserByGoogleId(googleId) {
+        return userModel.findOne({'google.id' : googleId});
     }
 };

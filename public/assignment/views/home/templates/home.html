@@ -1,0 +1,9 @@
+<div class="container">
+    <h1>Web Developemnt</h1>
+    <a class="btn btn-primary" href="#!/login"
+       ng-show="!model.currentUser">User login</a>
+    <a class="btn btn-primary" href="#!/profile"
+       ng-show="model.currentUser">User profile</a>
+    <a class="btn btn-primary" href="#!/admin"
+       ng-if="model.currentUser.roles.indexOf('ADMIN')>-1">Admin page</a>
+</div>

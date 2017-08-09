@@ -1,13 +1,13 @@
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-text pull-left">
-            <a href="#!/user/{{model.uid}}/website" class="cl-text-black cl-icon-padding">
+            <a href="#!/website" class="cl-text-black cl-icon-padding">
           <span class="glyphicon glyphicon-chevron-left">
           </span>
             </a>
         </div>
         <div class="navbar-text pull-right">
-            <a href="#!/user/{{model.uid}}/website/{{model.wid}}/page/new" class="cl-icon-padding cl-text-black">
+            <a href="#!/website/{{model.wid}}/page/new" class="cl-icon-padding cl-text-black">
           <span class="glyphicon glyphicon-plus">
           </span>
             </a>
@@ -22,10 +22,10 @@
 <div class="container">
     <ul class="list-group cl-list-group-borderless">
         <li ng-repeat="page in model.pages" class="list-group-item cl-list-item-borderless">
-            <a href="#!/user/{{model.uid}}/website/{{model.wid}}/page/{{page._id}}">
+            <a href="#!/website/{{model.wid}}/page/{{page._id}}">
                 <span class="glyphicon glyphicon-cog pull-right"></span>
             </a>
-            <a href="#!/user/{{model.uid}}/website/{{model.wid}}/page/{{page._id}}/widget">
+            <a href="#!/website/{{model.wid}}/page/{{page._id}}/widget">
                 {{page.name}}
             </a>
         </li>
@@ -36,7 +36,7 @@
     <div class="container-fluid row">
         <div class="pull-right navbar-text">
 
-            <a href="#!/user/{{model.uid}}" class="tv-icon-padding">
+            <a href="#!/profile" class="tv-icon-padding">
                 <span class="glyphicon glyphicon-user"></span>
             </a>
 

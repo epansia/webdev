@@ -6,7 +6,7 @@ module.exports = function(app, models){
     app.post('/api/user/:uid/website',createWebsite);
 
     //GET Calls
-    app.get('/api/user/:uid/website',findWebsitesByUser);
+    app.get('/api/user/:uid/website',findAllWebsitesForUser);
     app.get('/api/website/:wid',findWebsiteById);
 
     //PUT Calls
@@ -21,21 +21,40 @@ module.exports = function(app, models){
         var website = req.body;
 
         websiteModel
-            .createWebsite(uid, website)
-            .then(function (website) {
-                res.json(website);
-            }, function (error) {
-                res.send(error);
-            });
+            .createWebsiteForUser(uid, website)
+            .then(
+                function (website) {
+                    if(website){
+                        res.json(website);
+                    } else {
+                        website = null;
+                        res.send(website);
+                    }
+                },
+                function (error) {
+                    res.send(error);
+                }
+            );
     }
 
-    function findWebsitesByUser(req, res) {
+    function findAllWebsitesForUser(req, res) {
         var uid = req.params.uid;
+
         websiteModel
-            .findWebsitesByUser(uid)
-            .then(function (websites) {
-                res.json(websites);
-            });
+            .findAllWebsitesForUser(uid)
+            .then(
+                function (websites) {
+                    if(websites) {
+                        res.json(websites);
+                    } else {
+                        websites = null;
+                        res.send(websites);
+                    }
+                },
+                function (error) {
+                    res.sendStatus(400).send("website service server, findAllWebsitesForUser error");
+                }
+            )
     }
 
     function findWebsiteById(req, res) {
@@ -43,11 +62,19 @@ module.exports = function(app, models){
 
         websiteModel
             .findWebsiteById(wid)
-            .then(function (website) {
-                res.json(website);
-            }, function (error) {
-                res.status(404).send("The website not found");
-            });
+            .then(
+                function (website) {
+                    if(website) {
+                        res.json(website);
+                    } else {
+                        website = null;
+                        res.send(website);
+                    }
+                },
+                function (error) {
+                    res.sendStatus(400).send(error);
+                }
+            )
     }
 
     function updateWebsite(req, res) {
@@ -57,18 +84,32 @@ module.exports = function(app, models){
 
         websiteModel
             .updateWebsite(wid, website)
-            .then(function (status) {
-                res.send(status);
-            });
+            .then(
+                function (website){
+                    res.json(website)
+                },
+                function (error){
+                    res.sendStatus(400).send("website service server, updateWebsite error");
+                }
+            );
     }
 
     function deleteWebsite(req, res) {
         var wid = req.params.wid;
-        var uid = req.params.uid;
-        websiteModel
-            .deleteWebsite(uid, wid)
-            .then(function (status) {
-                res.send(status);
-            });
+
+        if(wid){
+            websiteModel
+                .deleteWebsite(wid)
+                .then(
+                    function (status){
+                        res.sendStatus(200);
+                    },
+                    function (error){
+                        res.sendStatus(400).send(error);
+                    }
+                );
+        } else{
+            res.sendStatus(412);
+        }
     }
 };

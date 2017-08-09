@@ -11,26 +11,24 @@
 
         function login(username, password) {
             UserService
-                .findUserByCredentials(username, password)
-                .then(login);
-
-            function login(user) {
-                console.log(user);
-                if (user === null) {
-                    vm.error = "Username does not exist.";
-                } else {
-                    $location.url("/user/" + user._id);
-                }
-            }
+            // .findUserByCredentials(username, password)
+                .login(username, password)
+                .then(function (user) {
+                        $location.url("/profile");
+                    },
+                    function (error) {
+                        vm.error = "Username does not exist.";
+                    });
         }
     }
 
-    function RegisterController(UserService, $location) {
+    function RegisterController(UserService, $location, $timeout) {
         var vm = this;
         vm.register = register;
 
         function register(username, password, vpassword) {
-            if (username === undefined || username === null || username === "" || password === undefined || password === "") {
+            if (username === undefined || username === null || username === ""
+                || password === undefined || password === "") {
                 vm.error = "Username and Passwords cannot be empty.";
                 return;
             }
@@ -41,36 +39,42 @@
             UserService
                 .findUserByUsername(username)
                 .then(
-                    function () {
-                        vm.error = "Username already exists.";
-                    },
-                    function () {
-                        var user = {
-                            username: username,
-                            password: password,
-                            firstName: "",
-                            lastName: "",
-                            email: ""
-                        };
-                        return UserService
-                            .createUser(user)
+                    function (user) {
+                        if (user !== null) {
+                            vm.error = "Username already exists.";
+                            $timeout(function () {
+                                vm.error = null;
+                            }, 3000);
+                            return;
+                        } else {
+                            var user = {
+                                username: username,
+                                password: password,
+                                firstName: "",
+                                lastName: "",
+                                email: ""
+                            };
+                            // return the promise
+                            return UserService
+                                .register(user);
+                        }
                     })
                 .then(
-                    function (user) {
-                        $location.url("/user/" + user._id);
+                    function () {
+                        $location.url("/profile");
                     });
         }
     }
 
-    function ProfileController($routeParams, $timeout, $location, UserService) {
+    function ProfileController($routeParams, $timeout, $location, UserService, loggedin) {
         var vm = this;
-        vm.uid = $routeParams.uid;
+        // vm.uid = $routeParams.uid;
+        vm.uid = loggedin._id;
+        vm.user = loggedin;
 
         vm.updateUser = updateUser;
         vm.deleteUser = deleteUser;
-
-        UserService.findUserById(vm.uid)
-            .then(renderUser, userError);
+        vm.logout = logout;
 
         function deleteUser(user) {
             UserService
@@ -96,9 +100,12 @@
                 });
         }
 
-
-        function renderUser(user) {
-            vm.user = user;
+        function logout() {
+            UserService
+                .logout()
+                .then(function () {
+                    $location.url('/login');
+                })
         }
 
         function userError(error) {

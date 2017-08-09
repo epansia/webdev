@@ -1,7 +1,7 @@
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
         <div class="navbar-text pull-left margin-left">
-            <a href="#!/user/{{model.uid}}/website/{{model.wid}}/page/{{model.pid}}/widget"
+            <a href="#!/website/{{model.wid}}/page/{{model.pid}}/widget"
                class="cl-text-black">
                 <span class="glyphicon glyphicon-chevron-left"></span>
             </a>
@@ -10,7 +10,7 @@
             Create Widget
         </a>
         <div class="navbar-text pull-right">
-            <a ng-click="model.createWidget(model.widget.size, model.widget.width, model.widget.text, model.widget.url)"
+            <a ng-click="model.createWidget(model.widget.name, model.widget.size, model.widget.width, model.widget.text, model.widget.url)"
                class="cl-text-black">
                 <span class="glyphicon glyphicon-ok"></span>
             </a>
@@ -22,7 +22,7 @@
     <div ng-show="model.error" class="alert alert-danger" role="alert">{{model.error}}</div>
     <div ng-switch="model.wtype">
         <div ng-switch-when="HEADING">
-            <div ng-include src="'views/widget/templates/heading/widget-header-edit.view.client.html'"></div>
+            <div ng-include src="'views/widget/templates/heading/widget-heading-edit.view.client.html'"></div>
         </div>
         <div ng-switch-when="IMAGE">
             <div ng-include src="'views/widget/templates/image/widget-image-edit.view.client.html'"></div>
@@ -39,7 +39,7 @@
 <nav class="navbar navbar-fixed-bottom navbar-default">
     <div class="container-fuild">
         <div class="navbar-text pull-right cl-icon-padding">
-            <a href="#!/user/{{model.uid}}" class="cl-text-blue">
+            <a href="#!/profile" class="cl-text-blue">
                 <span class="glyphicon glyphicon-user"></span>
             </a>
         </div>

@@ -1,0 +1,18 @@
+<label for="name">Name</label>
+<input ng-model="model.widget.name"
+       type="text"
+       class="form-control"
+       placeholder="HTML Name"
+       id="name"
+       required>
+
+<label for="text">HTML</label>
+<text-angular
+        ta-toolbar="[['h1','h2','h3'],['bold','italics','underline','strikeThrough'],
+        ['ul','ol'],['justifyLeft','justifyCenter','justifyRight','justifyFull'],
+        ['indent','outdent'],['html']]"
+        ng-model="model.widget.text"
+        type="text"
+        place-holder="html content"
+        id="text">
+</text-angular>

@@ -45,7 +45,9 @@ module.exports = function(mongoose, websiteModel){
         });
     }
 
-    function deletePage(websiteId, pageId) {
+    function deletePage(pageId) {
+        //var websiteId = pageModel.findOne({_id: pageId})._website;
+
         return pageModel
             .remove({_id: pageId})
             .then(function (status) {
@@ -59,7 +61,8 @@ module.exports = function(mongoose, websiteModel){
         pageModel
             .findById(pageId)
             .then(function (page) {
-                page.widgets.pull(widgetId);
+                var index = page.widgets.indexOf(widgetId);
+                page.widgets.splice(index, 1);
                 page.save();
             }, function (error) {
                 console.log(error);
@@ -68,7 +71,7 @@ module.exports = function(mongoose, websiteModel){
 
     function addWidgetToPage(pageId, widgetId) {
         return pageModel
-            .findById({_id: pageId})
+            .findOne({_id: pageId})
             .then(function (page) {
                 page.widgets.push(widgetId);
                 return page.save();

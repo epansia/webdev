@@ -1,10 +1,10 @@
-(function() {
+(function () {
     angular
         .module("WebAppMaker")
         .factory("PageService", PageService);
 
-    function PageService($http) {
-        var service = {
+    function PageService($http){
+        var services = {
             'createPage' : createPage,
             'findPageByWebsiteId' : findPageByWebsiteId,
             'findPageById' : findPageById,
@@ -12,7 +12,7 @@
             'deletePage' : deletePage,
             'deletePagesByWebsite' : deletePagesByWebsite
         };
-        return service;
+        return services;
 
         function createPage(websiteId, page){
             var url = "/api/website/" + websiteId + "/page";
@@ -46,8 +46,8 @@
                 });
         }
 
-        function deletePage(pageId) {
-            var url = "/api/page/" + pageId;
+        function deletePage(websiteId, pageId) {
+            var url = "/api/website/" + websiteId + "/page/" + pageId;
             console.log(url);
             return $http.delete(url)
                 .then(function (response) {

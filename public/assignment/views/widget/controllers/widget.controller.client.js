@@ -6,9 +6,9 @@
         .controller("CreateWidgetController", CreateWidgetController)
         .controller("EditWidgetController", EditWidgetController);
 
-    function WidgetListController($routeParams, $sce, WidgetService) {
+    function WidgetListController($routeParams, $sce, WidgetService, loggedin) {
         var vm = this;
-        vm.uid = $routeParams.uid;
+        vm.uid = loggedin._id;
         vm.wid = $routeParams.wid;
         vm.pid = $routeParams.pid;
         WidgetService
@@ -35,17 +35,17 @@
         }
     }
 
-    function NewWidgetController($routeParams, $timeout, WidgetService) {
+    function NewWidgetController($routeParams, $timeout, WidgetService, loggedin) {
         var vm = this;
-        vm.uid = $routeParams.uid;
+        vm.uid = loggedin._id;
         vm.wid = $routeParams.wid;
         vm.pid = $routeParams.pid;
         vm.widgets = WidgetService.findWidgetsByPageId(vm.pid);
     }
 
-    function CreateWidgetController($routeParams, $location, WidgetService, $timeout) {
+    function CreateWidgetController($routeParams, $location, WidgetService, $timeout, loggedin) {
         var vm = this;
-        vm.uid = $routeParams.uid;
+        vm.uid = loggedin._id;
         vm.wid = $routeParams.wid;
         vm.pid = $routeParams.pid;
         vm.wtype = $routeParams.wtype;
@@ -53,7 +53,7 @@
         vm.createError = null;
 
 
-        function createWidget(size, width, text, url) {
+        function createWidget(name, size, width, text, url) {
             if (vm.wtype === "HEADING") {
                 if (size === undefined || text === undefined || size === null || text === null) {
                     vm.error = "Heading name and size cannot be empty";
@@ -84,6 +84,7 @@
 
             var newWidget = {
                 widgetType: vm.wtype,
+                name: name,
                 size: size,
                 width: width,
                 text: text,
@@ -97,9 +98,9 @@
         }
     }
 
-    function EditWidgetController($routeParams, $location, WidgetService, $timeout) {
+    function EditWidgetController($routeParams, $location, WidgetService, $timeout, loggedin) {
         var vm = this;
-        vm.uid = $routeParams.uid;
+        vm.uid = loggedin._id;
         vm.wid = $routeParams.wid;
         vm.pid = $routeParams.pid;
         vm.wgid = $routeParams.wgid;
@@ -140,6 +141,51 @@
                         vm.error = null;
                     }, 3000);
                 })
+        }
+
+    }
+
+    function FlickrImageSearchController($routeParams, $location, FlickrService, WidgetService, loggedin) {
+        var vm = this;
+        vm.uid = loggedin._id;
+        vm.wid = $routeParams.wid;
+        vm.pid = $routeParams.pid;
+        vm.wgid = $routeParams.wgid;
+
+        vm.selectPhoto = selectPhoto;
+        vm.searchPhotos = function(searchTerm) {
+            FlickrService
+                .searchPhotos(searchTerm)
+                .then(function(response) {
+                    data = response.data.replace("jsonFlickrApi(","");
+                    data = data.substring(0,data.length - 1);
+                    data = JSON.parse(data);
+                    vm.photos = data.photos;
+                });
+        };
+
+        function selectPhoto(photo) {
+            var url = "https://farm" + photo.farm + ".staticflickr.com/" + photo.server;
+            url += "/" + photo.id + "_" + photo.secret + "_b.jpg";
+
+            var newWidget = {
+                widgetType: "IMAGE",
+                url: url
+            };
+
+            if (vm.wgid === null || vm.wgid === undefined) {
+                WidgetService
+                    .createWidget(vm.pid, newWidget)
+                    .then(function () {
+                        $location.url("/website/" + vm.wid + "/page/" + vm.pid + "/widget");
+                    })
+            } else {
+                WidgetService
+                    .updateWidget(vm.wgid, newWidget)
+                    .then(function () {
+                        $location.url("/website/" + vm.wid + "/page/" + vm.pid + "/widget");
+                    })
+            }
         }
 
     }

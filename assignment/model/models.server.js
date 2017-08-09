@@ -11,7 +11,9 @@ module.exports = function() {
     }
 
     var mongoose = require('mongoose');
-    mongoose.connect(connectionString);
+    mongoose.connect(connectionString, {
+        useMongoClient: true
+    });
     mongoose.Promise = require('q').Promise;
 
     var db = mongoose.connection;
